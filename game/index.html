@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#061416">
+  <link rel="icon" href="data:,">
+  <title>Signal Keeper</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main id="stage" aria-label="Signal Keeper game">
+    <canvas id="sea" width="1280" height="800" aria-label="A dark grid sea with a lighthouse tender, signal buoys and a closing storm"></canvas>
+
+    <div id="hud" class="hud is-hidden" aria-label="Run status">
+      <div class="hud-top">
+        <div class="hud-brand">
+          <span class="hud-mark" aria-hidden="true"></span>
+          <span>
+            <b>Signal Keeper</b>
+            <small>North Shoal / Watch 04</small>
+          </span>
+        </div>
+        <div class="hud-cell hud-score">
+          <span class="hud-label">Score</span>
+          <span class="hud-scoreline"><strong id="hudScore">0000</strong><b id="hudCombo" class="combo-badge">x1</b></span>
+        </div>
+        <div class="hud-cell hud-buoys">
+          <span class="hud-label">Buoys</span>
+          <strong id="hudBuoys">00</strong>
+        </div>
+        <div class="hud-cell hud-hull">
+          <span class="hud-label">Hull</span>
+          <span id="hudHull" class="hull-pips" aria-label="Three hull points">
+            <i></i><i></i><i></i>
+          </span>
+        </div>
+        <div class="hud-cell hud-run">
+          <span class="hud-label">Run</span>
+          <strong id="hudTime">00:00</strong>
+        </div>
+        <div class="hud-cell hud-storm">
+          <span class="hud-label">Storm pressure <b id="hudStorm">0%</b></span>
+          <span class="storm-track"><i id="hudStormBar"></i></span>
+        </div>
+      </div>
+      <div class="hud-foot">
+        <span><kbd>WASD</kbd> / <kbd>ARROWS</kbd> steer</span>
+        <span><kbd>CLICK</kbd> drop flare</span>
+        <span id="hudFlare" class="flare-state">Flare ready</span>
+        <span class="hud-spacer"></span>
+        <span><kbd>P</kbd> pause</span>
+        <span><kbd>M</kbd> sound</span>
+      </div>
+    </div>
+
+    <section id="screenStart" class="screen screen-start" aria-labelledby="gameTitle">
+      <header class="start-top">
+        <div class="station-line">
+          <span class="station-mark" aria-hidden="true"></span>
+          <span>North Shoal Light Station 04</span>
+        </div>
+        <span class="start-clock">02:14 / squall inbound</span>
+      </header>
+
+      <div class="start-main">
+        <div class="start-copy">
+          <p class="eyebrow">A night watch arcade</p>
+          <h1 id="gameTitle">Signal<br><span>Keeper</span></h1>
+          <p class="start-lede">The channel is dark. The front is moving.<br>Keep the buoys lit and the tender whole.</p>
+        </div>
+        <div class="start-artnote" aria-hidden="true">
+          <span class="artnote-line"></span>
+          <span>Sector 7<br>sea state 5</span>
+        </div>
+      </div>
+
+      <footer class="start-dock">
+        <div class="dock-order">
+          <p class="panel-label">Watch order</p>
+          <p class="order-copy">Collect drifting signal buoys to score and push the storm back. Drop a flare to burn every mine in its light. A strike costs hull: three and the light goes out.</p>
+          <p class="best-line">Personal best <strong id="startBest">0000</strong></p>
+        </div>
+        <div class="dock-controls">
+          <div class="control-row"><span class="keycap">WASD</span><span class="control-divider">or</span><span class="keycap">Arrows</span><span class="control-name">Steer the tender</span></div>
+          <div class="control-row"><span class="keycap keycap-wide">Click</span><span class="control-name">Drop a flare</span></div>
+          <div class="control-row"><span class="keycap">P</span><span class="keycap">M</span><span class="control-name">Pause / sound</span></div>
+        </div>
+        <div class="dock-action">
+          <button id="startButton" class="primary-button" type="button">
+            <span>Begin watch</span>
+            <kbd>Enter</kbd>
+          </button>
+          <p class="fineprint">One tender. Three hull. No second chances.</p>
+        </div>
+      </footer>
+    </section>
+
+    <section id="screenPause" class="screen screen-pause is-hidden" aria-labelledby="pauseTitle">
+      <div class="pause-card">
+        <p class="panel-label">Watch suspended</p>
+        <h2 id="pauseTitle">Holding<br>position</h2>
+        <p class="pause-copy">The front waits. Your hull does not repair.</p>
+        <button id="resumeButton" class="primary-button" type="button"><span>Resume watch</span><kbd>P</kbd></button>
+        <p class="fineprint">Press M for sound. Press R to abandon and restart.</p>
+      </div>
+    </section>
+
+    <section id="screenEnd" class="screen screen-end is-hidden" aria-labelledby="endTitle">
+      <div class="end-card">
+        <div class="end-stripe" aria-hidden="true"></div>
+        <p class="panel-label">Watch record / Station 04</p>
+        <h2 id="endTitle">Signal lost</h2>
+        <p id="endReason" class="end-reason">The storm took the tender.</p>
+        <div class="end-scoreline">
+          <span>Final score</span>
+          <strong id="endScore">0</strong>
+        </div>
+        <div class="end-stats">
+          <div><span>Buoys</span><strong id="endBuoys">0</strong></div>
+          <div><span>Survived</span><strong id="endTime">00:00</strong></div>
+          <div><span>Storm peak</span><strong id="endStorm">0%</strong></div>
+        </div>
+        <div class="end-best">
+          <span id="endBestLabel">Personal best</span>
+          <strong id="endBest">0</strong>
+        </div>
+        <button id="restartButton" class="primary-button" type="button"><span>Run again</span><kbd>R</kbd></button>
+        <p class="fineprint">Same sea. Better luck next watch.</p>
+      </div>
+    </section>
+
+    <div id="muteFlag" class="mute-flag is-hidden">Sound off</div>
+    <div id="screenFlash" class="screen-flash" aria-hidden="true"></div>
+  </main>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
