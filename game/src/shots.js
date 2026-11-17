@@ -48,21 +48,32 @@ function advance(state, seconds, autopilot) {
   }
 }
 
-/** Lay a flare on the mine nearest the tender, so the play shot puts the burn, the tender and the
- *  cooling HUD line in one frame instead of a cluster in a corner. */
+/** Close on a mine that sits well inside the frame, so the play shot puts the burn, the tender and
+ *  the cooling HUD line in one readable frame instead of a cluster in a corner. */
 function stageFlare(state) {
-  if (state.mines.length === 0) return;
-  let target = state.mines[0];
+  const inFrame = state.mines.filter((mine) => mine.x > 220 && mine.x < 1040 && mine.y > 220 && mine.y < 620);
+  const pool = inFrame.length > 0 ? inFrame : state.mines;
+  if (pool.length === 0) return null;
+  let target = pool[0];
   let best = Infinity;
-  for (const mine of state.mines) {
+  for (const mine of pool) {
     const distance = Math.hypot(mine.x - state.player.x, mine.y - state.player.y);
     if (distance < best) {
       best = distance;
       target = mine;
     }
   }
+  // Steer onto it for a moment so the tender stands in its own light when the flare goes.
+  const toMine = { x: target.x - state.player.x, y: target.y - state.player.y };
+  const length = Math.hypot(toMine.x, toMine.y) || 1;
+  const heading = { x: toMine.x / length, y: toMine.y / length };
+  for (let i = 0; i < 40 && Math.hypot(target.x - state.player.x, target.y - state.player.y) > 96; i += 1) {
+    stepRun(state, STEP, heading);
+    drainEvents(state);
+  }
   state.flareCooldown = 0;
   useFlare(state, target.x, target.y);
+  return target;
 }
 
 export function stageShot(kind, seed) {
@@ -97,11 +108,8 @@ export function stageShot(kind, seed) {
     };
   }
   advance(state, 22, true);
-  stageFlare(state);
-  advance(state, 0.08, true);
-  return {
-    state,
-    view: { screen: 'play', pointer: { x: 780, y: 360, inside: true } },
-    summary: null,
-  };
+  const flare = stageFlare(state);
+  advance(state, 0.3, false);
+  const pointer = flare ? { x: flare.x + 90, y: flare.y - 60, inside: true } : { x: 780, y: 360, inside: true };
+  return { state, view: { screen: 'play', pointer }, summary: null };
 }

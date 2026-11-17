@@ -345,25 +345,26 @@ function mineIsLit(state, mine) {
   return false;
 }
 
-/** A burned mine leaves a flat rust X on the water for a moment, so the flare's work is visible in its light. */
+/** A burned mine leaves a flat rust X ringed by embers on the water for a moment, big enough to read
+ *  around a flare's flame diamond, so the flare's work is visible in its own light. */
 function drawScorches(ctx, scorches) {
   for (const scorch of scorches) {
     const fade = Math.min(1, scorch.life / 1.2);
     ctx.save();
-    ctx.globalAlpha = fade * 0.85;
+    ctx.globalAlpha = fade * 0.9;
     ctx.strokeStyle = COLOR.rust;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(scorch.x - 8, scorch.y - 8);
-    ctx.lineTo(scorch.x + 8, scorch.y + 8);
-    ctx.moveTo(scorch.x + 8, scorch.y - 8);
-    ctx.lineTo(scorch.x - 8, scorch.y + 8);
+    ctx.moveTo(scorch.x - 15, scorch.y - 15);
+    ctx.lineTo(scorch.x + 15, scorch.y + 15);
+    ctx.moveTo(scorch.x + 15, scorch.y - 15);
+    ctx.lineTo(scorch.x - 15, scorch.y + 15);
     ctx.stroke();
-    ctx.globalAlpha = fade * 0.5;
+    ctx.globalAlpha = fade * 0.6;
     ctx.fillStyle = COLOR.amber;
-    for (let i = 0; i < 4; i += 1) {
-      const a = (i / 4) * Math.PI * 2 + scorch.life * 2;
-      ctx.fillRect(scorch.x + Math.cos(a) * 15 - 1.5, scorch.y + Math.sin(a) * 15 - 1.5, 3, 3);
+    for (let i = 0; i < 6; i += 1) {
+      const a = (i / 6) * Math.PI * 2 + scorch.life * 2;
+      ctx.fillRect(scorch.x + Math.cos(a) * 24 - 2, scorch.y + Math.sin(a) * 24 - 2, 4, 4);
     }
     ctx.restore();
   }
